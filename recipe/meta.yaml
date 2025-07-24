@@ -1,4 +1,4 @@
-{% set version = "1.0.8" %}
+{% set version = "1.1.0" %}
 
 package:
   name: spglm
@@ -6,20 +6,24 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/spglm/spglm-{{ version }}.tar.gz
-  sha256: df83b8f7caa41c8aebc4cc39179e40e8670783b06ee567b59bbbe818b773f300
+  sha256: 20519dc38be9d660a28109bb1b89d1068454e79f6413bab2e3987db5bf959327
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+  # Python 3.10 is chosen due to older versions like 3.9 dependence on libpysal 4.5.1, which in turn loads incompatible version of scipy
+  skip: true  # [py<310]
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --ignore-installed -vv .
 
 requirements:
   host:
-    - python >=3.6
+    - python
     - pip
+    - setuptools >=61.0
+    - setuptools_scm >=6.2
+    - wheel
   run:
-    - python >=3.6
-    - libpysal >=4.0.0
+    - python
+    - libpysal >=4.10 # specific version is chosen due to older version being dependant on incompatible scipy
     - numpy >=1.3
     - scipy >=0.11
     - spreg >=1.0.4
@@ -36,7 +40,14 @@ about:
   home: https://github.com/pysal/spglm
   license: BSD-3-Clause
   license_file: LICENSE
+  license_family: BSD
   summary: Sparse generalized linear models
+  dev_url: https://github.com/pysal/spglm
+  doc_url: https://github.com/pysal/spglm/tree/main/docs
+  description: |
+    This module is an adaptation of a portion of GLM functionality from the Statsmodels package, 
+    this it has been simplified and customized for the purposes of serving as the base for several 
+    other PySAL modules, namely SpInt and GWR.
 
 extra:
   recipe-maintainers:
